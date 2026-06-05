@@ -25,11 +25,19 @@
       border-radius: 10px;
     }
 
-    input, select {
+    input, select, button {
       padding: 8px;
       margin-top: 5px;
       border-radius: 5px;
       border: none;
+    }
+
+    button {
+      cursor: pointer;
+      margin-top: 15px;
+      background: #ffffff;
+      color: #333;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -41,7 +49,7 @@
 <div class="agent-container">
 
   <label for="languageSelect">Choose Language:</label><br>
-  <select id="languageSelect" onchange="applyChanges()">
+  <select id="languageSelect">
     <option value="en-GB">English (UK)</option>
     <option value="fr-FR">Français (FR)</option>
     <option value="de-DE">Deutsch (DE)</option>
@@ -51,6 +59,10 @@
 
   <label for="webUserEmail">Enter Email Address:</label><br>
   <input type="email" id="webUserEmail" placeholder="Enter email">
+
+  <br>
+
+  <button onclick="submitForm()">Submit</button>
 
 </div>
 
@@ -72,13 +84,20 @@
     deploymentId: '10ac891d-60dd-40fc-86d8-4c803d4c0754'
   });
 
-  function applyChanges() {
+  function submitForm() {
     const locale = document.getElementById("languageSelect").value;
     const email  = document.getElementById("webUserEmail").value;
 
+    if (!email) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    // ✅ Save values first
     localStorage.setItem("selectedLocale", locale);
     localStorage.setItem("selectedEmail", email);
 
+    // ✅ Push to Genesys before reload
     Genesys("command", "Database.set", {
       messaging: {
         customAttributes: {
@@ -88,6 +107,7 @@
       }
     });
 
+    // ✅ Reload after everything is set
     location.reload();
   }
 
@@ -98,6 +118,7 @@
     document.getElementById("languageSelect").value = locale;
     document.getElementById("webUserEmail").value = email;
 
+    // ✅ Ensure Genesys always has values after reload
     Genesys("command", "Database.set", {
       messaging: {
         customAttributes: {
