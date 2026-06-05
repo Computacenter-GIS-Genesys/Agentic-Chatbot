@@ -98,7 +98,6 @@
     document.getElementById("languageSelect").value = locale;
     document.getElementById("webUserEmail").value = email;
 
-    // ✅ Re-apply after reload to guarantee availability
     Genesys("command", "Database.set", {
       messaging: {
         customAttributes: {
