@@ -57,6 +57,8 @@
 // Function to handle language change
   function changeLanguage(selectElement) {
       const selectedLocale = selectElement.value;
+      const selectedEmail  = selectElement.value
+      localStorage.setItem("selectedEmail", selectedEmail);
       localStorage.setItem("selectedLocale", selectedLocale);
       location.reload(); // Refresh the page
   }
@@ -64,18 +66,20 @@
   // Function to initialize Genesys with stored locale
   function initializeGenesys() {
       const locale = localStorage.getItem("selectedLocale") || "en-GB"; // Default to en-GB
+      const webUserEmail = localStorage.getItem("selectedEmail");
       Genesys("command", "Database.set", {
           messaging: {
               customAttributes: {
-                  name: "Sav Ricci",
+                  name: "",
                   locale: locale,
-                  webUserEmail: "savino.ricci@computacenter.com"
+                  webUserEmail: webUserEmail
               }
           }
       });
 
-      // Set dropdown to stored value
+      // Set to stored values
       document.getElementById("languageSelect").value = locale;
+      document.getElementById("webUserEmail").value = webUserEmail;
   }
 
   window.onload = initializeGenesys;
@@ -89,6 +93,8 @@
         <option value="fr-FR">Français (FR)</option>
         <option value="de-DE">Deutsch (DE)</option>
     </select>
+<label for="webUserEmail">Enter Email Address:</label>
+    <input type="text" id="webUserEmail" name="webUserEmail">
 </head>
 <body>
 
