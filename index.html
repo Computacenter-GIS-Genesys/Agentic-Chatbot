@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Genesys Agentic Virtual Agent Demo</title>
+
   <style>
     body {
       margin: 0;
@@ -19,79 +20,97 @@
 
     .agent-container {
       margin-top: 20px;
+      padding: 20px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+    }
+
+    input, select {
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>Genesys Agentic Virtual Agent Demo</h1>
+<h1>Genesys Agentic Virtual Agent Demo</h1>
 
-  <div class="agent-container">
-    <label for="languageSelect">Choose Language:</label><br>
-    <select id="languageSelect" onchange="changeLanguage()">
-      <option value="en-GB">English (UK)</option>
-      <option value="fr-FR">Français (FR)</option>
-      <option value="de-DE">Deutsch (DE)</option>
-    </select>
+<div class="agent-container">
 
-    <br><br>
+  <label for="languageSelect">Choose Language:</label><br>
+  <select id="languageSelect" onchange="applyChanges()">
+    <option value="en-GB">English (UK)</option>
+    <option value="fr-FR">Français (FR)</option>
+    <option value="de-DE">Deutsch (DE)</option>
+  </select>
 
-    <label for="webUserEmail">Enter Email Address:</label><br>
-    <input type="email" id="webUserEmail" name="webUserEmail" onchange="saveEmail()">
-  </div>
+  <br><br>
 
-  <script>
-    (function (g, e, n, es, ys) {
-      g['_genesysJs'] = e;
-      g[e] = g[e] || function () {
-        (g[e].q = g[e].q || []).push(arguments)
-      };
-      g[e].t = 1 * new Date();
-      g[e].c = es;
-      ys = document.createElement('script'); 
-      ys.async = 1; 
-      ys.src = n; 
-      ys.charset = 'utf-8'; 
-      document.head.appendChild(ys);
-    })(window, 'Genesys', 'https://apps.mypurecloud.de/genesys-bootstrap/genesys.min.js', {
-      environment: 'prod-euc1',
-      deploymentId: '10ac891d-60dd-40fc-86d8-4c803d4c0754'
+  <label for="webUserEmail">Enter Email Address:</label><br>
+  <input type="email" id="webUserEmail" placeholder="Enter email">
+
+</div>
+
+<script>
+  (function (g, e, n, es, ys) {
+    g['_genesysJs'] = e;
+    g[e] = g[e] || function () {
+      (g[e].q = g[e].q || []).push(arguments)
+    };
+    g[e].t = 1 * new Date();
+    g[e].c = es;
+    ys = document.createElement('script');
+    ys.async = 1;
+    ys.src = n;
+    ys.charset = 'utf-8';
+    document.head.appendChild(ys);
+  })(window, 'Genesys', 'https://apps.mypurecloud.de/genesys-bootstrap/genesys.min.js', {
+    environment: 'prod-euc1',
+    deploymentId: '10ac891d-60dd-40fc-86d8-4c803d4c0754'
+  });
+
+  function applyChanges() {
+    const locale = document.getElementById("languageSelect").value;
+    const email  = document.getElementById("webUserEmail").value;
+
+    localStorage.setItem("selectedLocale", locale);
+    localStorage.setItem("selectedEmail", email);
+
+    Genesys("command", "Database.set", {
+      messaging: {
+        customAttributes: {
+          locale: locale,
+          webUserEmail: email
+        }
+      }
     });
 
-    function changeLanguage() {
-      const locale = document.getElementById("languageSelect").value;
-      localStorage.setItem("selectedLocale", locale);
-      location.reload();
-    }
+    location.reload();
+  }
 
-    function saveEmail() {
-      const email = document.getElementById("webUserEmail").value;
-      localStorage.setItem("selectedEmail", email);
-    }
+  function initializeGenesys() {
+    const locale = localStorage.getItem("selectedLocale") || "en-GB";
+    const email  = localStorage.getItem("selectedEmail") || "";
 
-    function initializeGenesys() {
-      const locale = localStorage.getItem("selectedLocale") || "en-GB";
-      const webUserEmail = localStorage.getItem("selectedEmail") || "";
+    document.getElementById("languageSelect").value = locale;
+    document.getElementById("webUserEmail").value = email;
 
-      Genesys("command", "Database.set", {
-        messaging: {
-          customAttributes: {
-            name: "",
-            locale: locale,
-            webUserEmail: webUserEmail
-          }
+    // ✅ Re-apply after reload to guarantee availability
+    Genesys("command", "Database.set", {
+      messaging: {
+        customAttributes: {
+          locale: locale,
+          webUserEmail: email
         }
-      });
+      }
+    });
+  }
 
-      document.getElementById("languageSelect").value = locale;
-      document.getElementById("webUserEmail").value = webUserEmail;
-    }
-
-    window.onload = initializeGenesys;
-  </script>
+  window.onload = initializeGenesys;
+</script>
 
 </body>
 </html>
-
-
