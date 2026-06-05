@@ -58,7 +58,7 @@
   <br><br>
 
   <label for="webUserEmail">Enter Email Address:</label><br>
-  <input type="email" id="webUserEmail" placeholder="Enter email">
+  <input type="email" id="webUserEmail" placeholder="Enter email" size="40">
 
   <br>
 
@@ -93,11 +93,9 @@
       return;
     }
 
-    // ✅ Save values first
     localStorage.setItem("selectedLocale", locale);
     localStorage.setItem("selectedEmail", email);
 
-    // ✅ Push to Genesys before reload
     Genesys("command", "Database.set", {
       messaging: {
         customAttributes: {
@@ -107,7 +105,6 @@
       }
     });
 
-    // ✅ Reload after everything is set
     location.reload();
   }
 
@@ -118,7 +115,6 @@
     document.getElementById("languageSelect").value = locale;
     document.getElementById("webUserEmail").value = email;
 
-    // ✅ Ensure Genesys always has values after reload
     Genesys("command", "Database.set", {
       messaging: {
         customAttributes: {
