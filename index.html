@@ -17,84 +17,81 @@
       text-align: center;
     }
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 1.2rem;
-      opacity: 0.9;
-    }
-
     .agent-container {
-      margin-top: 40px;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 12px;
-      backdrop-filter: blur(6px);
+      margin-top: 20px;
     }
   </style>
 </head>
+
 <body>
 
   <h1>Genesys Agentic Virtual Agent Demo</h1>
-</body>
-  <script type="text/javascript" charset="utf-8">
-  (function (g, e, n, es, ys) {
-    g['_genesysJs'] = e;
-    g[e] = g[e] || function () {
-      (g[e].q = g[e].q || []).push(arguments)
-    };
-    g[e].t = 1 * new Date();
-    g[e].c = es;
-    ys = document.createElement('script'); ys.async = 1; ys.src = n; ys.charset = 'utf-8'; document.head.appendChild(ys);
-  })(window, 'Genesys', 'https://apps.mypurecloud.de/genesys-bootstrap/genesys.min.js', {
-    environment: 'prod-euc1',
-    deploymentId: '10ac891d-60dd-40fc-86d8-4c803d4c0754'
-  });
 
-// Function to handle language change
-  function changeLanguage(selectElement) {
-      const selectedLocale = selectElement.value;
-      const selectedEmail  = selectElement.value
-      localStorage.setItem("selectedEmail", selectedEmail);
-      localStorage.setItem("selectedLocale", selectedLocale);
-      location.reload(); // Refresh the page
-  }
+  <div class="agent-container">
+    <label for="languageSelect">Choose Language:</label><br>
+    <select id="languageSelect" onchange="changeLanguage()">
+      <option value="en-GB">English (UK)</option>
+      <option value="fr-FR">Français (FR)</option>
+      <option value="de-DE">Deutsch (DE)</option>
+    </select>
 
-  // Function to initialize Genesys with stored locale
-  function initializeGenesys() {
-      const locale = localStorage.getItem("selectedLocale") || "en-GB"; // Default to en-GB
-      const webUserEmail = localStorage.getItem("selectedEmail");
+    <br><br>
+
+    <label for="webUserEmail">Enter Email Address:</label><br>
+    <input type="email" id="webUserEmail" name="webUserEmail" onchange="saveEmail()">
+  </div>
+
+  <script>
+    (function (g, e, n, es, ys) {
+      g['_genesysJs'] = e;
+      g[e] = g[e] || function () {
+        (g[e].q = g[e].q || []).push(arguments)
+      };
+      g[e].t = 1 * new Date();
+      g[e].c = es;
+      ys = document.createElement('script'); 
+      ys.async = 1; 
+      ys.src = n; 
+      ys.charset = 'utf-8'; 
+      document.head.appendChild(ys);
+    })(window, 'Genesys', 'https://apps.mypurecloud.de/genesys-bootstrap/genesys.min.js', {
+      environment: 'prod-euc1',
+      deploymentId: '10ac891d-60dd-40fc-86d8-4c803d4c0754'
+    });
+
+    function changeLanguage() {
+      const locale = document.getElementById("languageSelect").value;
+      localStorage.setItem("selectedLocale", locale);
+      location.reload();
+    }
+
+    function saveEmail() {
+      const email = document.getElementById("webUserEmail").value;
+      localStorage.setItem("selectedEmail", email);
+    }
+
+    function initializeGenesys() {
+      const locale = localStorage.getItem("selectedLocale") || "en-GB";
+      const webUserEmail = localStorage.getItem("selectedEmail") || "";
+
       Genesys("command", "Database.set", {
-          messaging: {
-              customAttributes: {
-                  name: "",
-                  locale: locale,
-                  webUserEmail: webUserEmail
-              }
+        messaging: {
+          customAttributes: {
+            name: "",
+            locale: locale,
+            webUserEmail: webUserEmail
           }
+        }
       });
 
-      // Set to stored values
       document.getElementById("languageSelect").value = locale;
       document.getElementById("webUserEmail").value = webUserEmail;
-  }
+    }
 
-  window.onload = initializeGenesys;
+    window.onload = initializeGenesys;
+  </script>
 
-    
-</script>
+</body>
 </html>
-<label for="languageSelect">Choose Language:</label>
-    <select id="languageSelect" onchange="changeLanguage(this)">
-        <option value="en-GB">English (UK)</option>
-        <option value="fr-FR">Français (FR)</option>
-        <option value="de-DE">Deutsch (DE)</option>
-    </select>
-<label for="webUserEmail">Enter Email Address:</label>
-    <input type="text" id="webUserEmail" name="webUserEmail">
-</head>
-<body>
+
 
